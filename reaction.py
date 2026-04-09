@@ -16,13 +16,17 @@ right_name = input('right player name is ')
 led.on()
 sleep(uniform(5, 10))
 led.off()
-
+start_time = time()
 # 按键触发函数
 def pressed(button):
+    global start_time
+    reaction_time = round(time() - start_time, 3)
     if button.pin.number == 14:
         print(left_name + ' won the game')
+        print('反应时间：' + str(reaction_time) + ' 秒')
     else:
         print(right_name + ' won the game')
+        print('反应时间：' + str(reaction_time) + ' 秒')
     exit()
 
 # 绑定按键事件

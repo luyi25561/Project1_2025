@@ -1,46 +1,61 @@
-# 快速反应游戏 - 优化前完整代码
 from gpiozero import LED, Button
-from time import sleep
+from time import sleep, time
 from random import uniform
 
-# 设置硬件引脚
+# 硬件定义
 led = LED(4)
 left_button = Button(14)
 right_button = Button(15)
 
-# 输入玩家名字
+# 玩家名称
 left_name = input('left player name is ')
 right_name = input('right player name is ')
 
-# 初始化双方分数为0
+# 计分
 left_score = 0
 right_score = 0
 
-# -------------------------- 新增：无限循环（自动重开） --------------------------
-while True:
-    # 每局开始显示当前比分
-    print(f"\n===== 新一局开始 =====")
-    print(f"当前比分：{left_name} {left_score} 分 | {right_name} {right_score} 分")
+# 记录开始时间
+start_time = 0
+
+def pressed(button):
+    global left_score, right_score, start_time
+    
+    # 计算反应时间
+    reaction_time = round(time() - start_time, 3)
+    
+    # 判断获胜者并加分
+    if button.pin.number == 14:
+        print(left_name + ' won the game!')
+        left_score += 1
+    else:
+        print(right_name + ' won the game!')
+        right_score += 1
+    
+    # 显示成绩与反应时间
+    print('Reaction time: ' + str(reaction_time) + ' seconds')
+    print('Current Score -- ' + left_name + ': ' + str(left_score) + ' | ' + right_name + ': ' + str(_right_score))
+    
+    # 下一轮准备
+    print('\nNext round starting... Get ready!\n')
+    led.on()
+    sleep(uniform(5, 10))
+    led.off()
+    start_time = time()
+    print('GO!')
+
+# 绑定按键
+right_button.when_pressed = pressed
+left_button.when_pressed = pressed
 
 # 游戏开始
+print('Game starting... Get ready!')
 led.on()
 sleep(uniform(5, 10))
 led.off()
+start_time = time()
+print('GO!')
 
-# 按键触发函数
-def pressed(button):
-global left_score, right_score
-    if button.pin.number == 14:
-        print(left_name + ' won the game')
-left_score += 1  # 左玩家加分
-
-    else:
-        print(right_name + ' won the game')
-right_score += 1  # 右玩家加分
-    exit()
-
-# 绑定按键事件
-right_button.when_pressed = pressed
-left_button.when_pressed = pressed
-# 新增：每局结束后等待1.5秒，再开下一局，避免误触
-    sleep(1.5)
+# 保持程序运行
+while True:
+    sleep(1)
